@@ -1,0 +1,299 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- end favicon -->
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pyrite3D is a cube server designed to stream large 3D meshes to clients">
+    <title>Pyrite3D Demo</title>
+
+    <style>
+        .pure-g-valign-fix{display:block;}
+
+        code {
+            padding: 0.2em 0.4em;
+            white-space: nowrap;
+        }
+
+        .content p code {
+            font-size: 90%;
+        }
+
+        .code {
+            margin-left: -1em;
+            margin-right: -1em;
+            padding: 1em;
+            border: 1px solid #eee;
+            border-left-width: 0;
+            border-right-width: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .code code {
+            font-size: 95%;
+            white-space: pre;
+            word-wrap: normal;
+            padding: 0;
+            background: none;
+            font-size: smaller;
+        }
+        .code-wrap code {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code {
+            font-family: Consolas, Courier, monospace;
+            color: #333;
+            background: rgb(250, 250, 250);
+        }
+    </style>
+
+
+    <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.0/build/pure-min.css">
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.0/build/grids-responsive-old-ie-min.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.0/build/grids-responsive-min.css">
+    <!--<![endif]-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="/css/layouts/marketing-old-ie.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="/css/layouts/marketing.css">
+    <!--<![endif]-->
+
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.0/build/grids-responsive-old-ie-min.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.0/build/grids-responsive-min.css">
+    <!--<![endif]-->
+</head>
+<body>
+    <div style="text-align:center;">
+        <div class="pure-g pure-u-4-5" style="text-align:left;">
+            <div class="pure-u-1-1">
+                <h1>Set Metadata</h1>
+                Get Set Rendering information 
+            </div>
+
+            <h3>Parameters</h3>
+            <div class="pure-form pure-form-aligned">
+                <fieldset>
+                    <div class="pure-control-group">
+                        <label for="apiUrl">Base URL</label>
+                        <input type="text" id="apiUrl" class="pure-text pure-input-4-5" value="/sets/{set}/{version}" /><br />
+                    </div>
+                    <div class="pure-control-group">
+                        <label for="setName">Set Name</label>
+                        <input type="text" id="setName" class="pure-text pure-input-4-5" placeholder="{set}" /><br />
+                    </div>
+                    <div class="pure-control-group">
+                        <label for="versionName">Version Name</label>
+                        <input type="text" id="versionName" class="pure-text pure-input-4-5" placeholder="{version}" /><br />
+                    </div>
+                    <div class="pure-controls">
+                        <button class="pure-button pure-button-primary pure-input-1-5" onclick="onSendRequest()" id="send">Send Request</button>
+                    </div>
+                </fieldset>
+            </div>
+
+            <h3>Console</h3>
+            <div id="output" class="code" style="height:6em;">
+            </div>
+            
+            <h3>Parsed Response</h3>
+            <div id="response" class="code" style="height:8em;">
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var outputDiv = document.getElementById("output");
+    var sendButton = document.getElementById("send");
+
+    var apiUrl = document.getElementById("apiUrl");
+    var setName = document.getElementById("setName");
+    var versionName = document.getElementById("versionName");
+
+    var xhr;
+
+    var qs = parseQueryString();
+
+    var qsSet = qs["set"];
+    var qsVersion = qs["version"];
+
+    if (qsSet != undefined) {
+        setName.value = qsSet;
+    }
+
+    if (qsVersion != undefined) {
+        versionName.value = qsVersion;
+    }
+
+    if (qsSet != undefined && qsVersion != undefined) {
+        onSendRequest();
+    }
+    
+    function onSendRequest() {
+
+        var set = setName.value;
+        var version = versionName.value
+        var url = apiUrl.value.replace("{set}", set);
+        var url = url.replace("{version}", version);
+
+        xhr = createRequest('GET', url);
+
+        xhr.onload = function () {
+            var text = xhr.responseText;
+
+            outputDiv.innerText += xhr.status + " " + xhr.statusText + "\r\n";
+            outputDiv.innerText += text;
+
+            var responseDiv = document.getElementById("response");
+            parseResponse(set, version, text, responseDiv);
+        };
+
+        xhr.onerror = function () {
+            outputDiv.innerText += "Error sending request\r\n";
+            outputDiv.innerText += xhr.status + "\r\n";
+        };
+
+        if (!xhr) {
+            outputDiv.value = "Cross-Origin Requests not supported by your browser.";
+            sendButton.isDisabled = true;
+        }
+
+        outputDiv.innerText = "GET " + url + "\r\n\r\n";
+        xhr.send();
+    }
+
+    function createRequest(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
+
+            // Check if the XMLHttpRequest object has a "withCredentials" property.
+            // "withCredentials" only exists on XMLHTTPRequest2 objects.
+            xhr.open(method, url, true);
+
+        } else if (typeof XDomainRequest != "undefined") {
+
+            // Otherwise, check if XDomainRequest.
+            // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+            xhr = new XDomainRequest();
+            xhr.open(method, url);
+
+        } else {
+
+            // Otherwise, CORS is not supported by the browser.
+            xhr = null;
+
+        }
+        return xhr;
+    }
+
+    function parseResponse(set, version, responseText, div) {
+        var response = JSON.parse(responseText);
+        if (response["status"] == "OK") {
+
+            var successElement = document.createElement("div");
+            successElement.text = "Success";
+            div.appendChild(successElement);
+
+            var result = response["result"];
+            var detailLevels = result["detailLevels"];
+
+            for (index in detailLevels) {
+                var detailLevel = detailLevels[index];
+                var detailLevelName = detailLevel["name"];
+
+                var detailElement = document.createElement("div");
+                var anchorElement = document.createElement("a");
+                var detailLevelBreakOut = detailLevelName + "-focus";
+                anchorElement.href = "javascript:toggle('" + detailLevelBreakOut + "')";
+                anchorElement.innerText = detailLevel["name"];
+                var detailLevelElement = document.createElement("div");
+                detailLevelElement.setAttribute("style", "display:none");
+                detailLevelElement.setAttribute("id", detailLevelBreakOut);
+                detailLevelElement.innerHTML = "Cubes:" + xyz(detailLevel.setSize);
+                detailLevelElement.innerHTML += "<br>Model:" + xyz(detailLevel.modelBounds.min) + " -> " + xyz(detailLevel.modelBounds.max);
+                detailLevelElement.innerHTML += "<br>World:" + xyz(detailLevel.worldBounds.min) + " -> " + xyz(detailLevel.worldBounds.max);
+                detailLevelElement.innerHTML += "<br>C->W Scale:" + xyz(detailLevel.worldCubeScale);
+
+                detailElement.appendChild(anchorElement);
+                detailElement.appendChild(detailLevelElement);
+                div.appendChild(detailElement);
+            }
+        } else {
+            div.innerText = "Error: " + response["error"];
+        }
+    }
+
+    function xyz(vector) {
+        return "v3(" + vector.x + "," + vector.y + "," + vector.z + ")";
+    }
+
+    function toggle(elementName) {
+        var element = document.getElementById(elementName);
+        if (element.style.display == "none") {
+            element.style.display = "";
+        } else {
+            element.style.display = "none";
+        }
+    }
+
+    function parseQueryString() {
+        var qs = window.location.search;
+        if(qs.length > 0) {
+            qs = qs.substr(1);
+        }
+
+        var result = {};
+
+        if(qs == null)
+        {
+            return result;
+        }
+
+        var keyValues = qs.split("&");
+
+        for(var keyValue in keyValues)
+        {
+            keyValueSplit = keyValues[keyValue].split("=");
+
+            if(keyValueSplit.length == 1)
+            {
+                result[keyValueSplit[0]] = null;
+            }
+            else
+            {
+                result[keyValueSplit[0]] = decodeURIComponent(keyValueSplit[1]);
+            }
+        }
+
+        return result;
+    }
+</script>
+</html>
