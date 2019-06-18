@@ -214,8 +214,8 @@ namespace UniscanServer.DataAccess
             Uri storageRootUri = null;
             try
             {
-                storageRootUri = new Uri(this.storageRoot);
-
+                storageRootUri = new Uri(this.storageRoot, UriKind.Relative);
+                
                 setsMetadata = await this.Deserialize<SetContract[]>(storageRootUri);
                 if (setsMetadata == null)
                 {
@@ -239,7 +239,7 @@ namespace UniscanServer.DataAccess
                     foreach (SetVersionContract version in set.Versions)
                     {
                         Uri setMetadataUri = new Uri(storageRootUri, version.Url);
-
+                        
                         Trace.WriteLine(String.Format("Set: {0}, Url {1}", set.Name, setMetadataUri));
                         SetMetadataContract setMetadata = await this.Deserialize<SetMetadataContract>(setMetadataUri);
                         if (setMetadata == null)
@@ -286,7 +286,7 @@ namespace UniscanServer.DataAccess
             Uri storageRootUri = null;
             try
             {
-                storageRootUri = new Uri(this.storageRoot);
+                storageRootUri = new Uri(this.storageRoot, UriKind.Relative);
 
                 setsMetadata = await this.Deserialize<SetContract[]>(storageRootUri);
                 if (setsMetadata == null)

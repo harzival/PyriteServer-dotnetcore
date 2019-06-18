@@ -5,6 +5,9 @@ project.lock.json
 *.pyc
 nupkg/
 
+# Mesh data folder contents
+mesh-data-folder/*
+
 # Visual Studio Code
 .vscode
 

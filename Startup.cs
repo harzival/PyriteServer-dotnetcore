@@ -25,7 +25,13 @@ namespace UniscanServer
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            this.storage = new UriStorage("file://B:/Uniscan/obj/output/demosets.json");
+            
+            // This is where the mesh data folder is defined.
+            /* If you want to use a storage location external to this applications
+            project folder, use symlinks or you will need to change UriStorage.cs
+            to not set UriKind.Relative when creating a new Uri(). */
+            this.storage = new UriStorage("mesh-data-folder/demosets.json");
+
             Dependency.Storage = this.storage;
         }
 
